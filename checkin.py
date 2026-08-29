@@ -420,7 +420,7 @@ def run_check_in_requests(
 	"""执行 HTTP 签到请求（同步，避免在 async 上下文中使用阻塞 httpx）。"""
 	try:
 		client_kwargs: dict = {'http2': True, 'timeout': 30.0}
-		proxy_url = proxy_url = "socks5://127.0.0.1:1080"
+		proxy_url = get_proxy_server(use_proxy=use_proxy)
 		if proxy_url:
 			client_kwargs['proxy'] = proxy_url
 			if is_debug_enabled():
@@ -479,7 +479,7 @@ async def main():
 	"""主函数"""
 	if is_debug_enabled():
 		print('[INFO] DEBUG_MODE enabled')
-		proxy_server = "socks5://127.0.0.1:1080"
+		proxy_server = os.getenv('CHECKIN_PROXY_URL', '').strip()
 		if proxy_server:
 			print(f'[INFO] Proxy endpoint available: {proxy_server} (enabled per provider use_proxy)')
 		else:
