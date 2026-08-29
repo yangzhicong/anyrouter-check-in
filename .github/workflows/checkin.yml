@@ -41,6 +41,7 @@ jobs:
     - name: 安装依赖
       run: |
         uv sync --frozen
+        uv add --dev socksio httpx[socks]
         echo "✅ 环境初始化完成"
 
     - name: 安装系统依赖
