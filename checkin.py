@@ -418,7 +418,7 @@ def run_check_in_requests(
 	"""执行 HTTP 签到请求（同步，避免在 async 上下文中使用阻塞 httpx）。"""
 	try:
 		client_kwargs: dict = {'http2': True, 'timeout': 30.0}
-		proxy_url = get_proxy_server(use_proxy=use_proxy)
+		proxy_url = proxy_url = "http://127.0.0.1:1080"
 		if proxy_url:
 			client_kwargs['proxy'] = proxy_url
 			if is_debug_enabled():
