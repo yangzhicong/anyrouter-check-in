@@ -130,7 +130,9 @@ jobs:
 
     - name: 停止代理
       if: always()
-      run: bash scripts/stop_mihomo_proxy.sh
+      run: |
+        pkill -f sing-box || true
+        rm -f sing-box sing-box-config.json sing-box.log
 
     - name: 执行结果
       if: always()
