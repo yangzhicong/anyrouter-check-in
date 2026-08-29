@@ -477,11 +477,11 @@ async def main():
 	"""主函数"""
 	if is_debug_enabled():
 		print('[INFO] DEBUG_MODE enabled')
-		proxy_server = os.getenv('CHECKIN_PROXY_URL', '').strip()
+		proxy_server = os.environ.get("IS_PROXY", "false").lower() == "true"
 		if proxy_server:
 			print(f'[INFO] Proxy endpoint available: {proxy_server} (enabled per provider use_proxy)')
 		else:
-			print('[INFO] CHECKIN_PROXY_URL not set; providers with use_proxy=true will run without proxy')
+			print('[INFO] PROXY_SERVER not set; providers with use_proxy=true will run without proxy')
 	else:
 		print('[INFO] Debug mode disabled (set DEBUG_MODE=true to enable screenshots and verbose logs)')
 
