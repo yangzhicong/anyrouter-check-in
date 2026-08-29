@@ -10,6 +10,8 @@ import os
 import sys
 from datetime import datetime
 
+os.environ["CHECKIN_PROXY_URL"] = "socks5://127.0.0.1:1080"
+
 if hasattr(sys.stdout, 'reconfigure'):
 	sys.stdout.reconfigure(line_buffering=True)
 if hasattr(sys.stderr, 'reconfigure'):
