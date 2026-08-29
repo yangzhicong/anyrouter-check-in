@@ -9,7 +9,7 @@ def get_proxy_server(*, use_proxy: bool = True) -> str | None:
 	"""按平台配置读取 CHECKIN_PROXY_URL；use_proxy=False 时不返回代理地址。"""
 	if not use_proxy:
 		return None
-	server = os.getenv('CHECKIN_PROXY_URL', 'http://127.0.0.1:1080').strip()
+	server = os.getenv('CHECKIN_PROXY_URL', '').strip()
 	return server or None
 
 
