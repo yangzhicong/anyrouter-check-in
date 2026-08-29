@@ -417,7 +417,7 @@ def run_check_in_requests(
 ) -> tuple[bool, dict | None, dict | None]:
 	"""执行 HTTP 签到请求（同步，避免在 async 上下文中使用阻塞 httpx）。"""
 	try:
-		client_kwargs: dict = {'http2': True, 'timeout': 30.0}
+		client_kwargs: dict = {'http2': False, 'timeout': 30.0}
 		proxy_url = proxy_url = "http://127.0.0.1:1080"
 		if proxy_url:
 			client_kwargs['proxy'] = proxy_url
