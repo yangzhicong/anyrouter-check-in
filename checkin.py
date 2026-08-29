@@ -477,7 +477,7 @@ async def main():
 	"""主函数"""
 	if is_debug_enabled():
 		print('[INFO] DEBUG_MODE enabled')
-		proxy_server = "http://27.0.0.1:1080"
+		proxy_server = "http://127.0.0.1:1080"
 		if proxy_server:
 			print(f'[INFO] Proxy endpoint available: {proxy_server} (enabled per provider use_proxy)')
 		else:
