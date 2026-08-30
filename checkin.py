@@ -251,7 +251,7 @@ def get_user_info(client, headers, user_info_url: str):
 					'success': True,
 					'quota': quota,
 					'used_quota': used_quota,
-					'display': f':money: Current balance: ${quota}, Used: ${used_quota}',
+					'display': f'💰 当前余额: ${quota}, 已消耗: ${used_quota}',
 				}
 		return {'success': False, 'error': f'Failed to get user info: HTTP {response.status_code}'}
 	except Exception as e:
@@ -318,36 +318,31 @@ def execute_check_in(client, account_name: str, provider_config, headers: dict):
 
 
 def format_check_in_notification(detail: dict) -> str:
-	"""格式化签到通知消息"""
+	"""格式化签到通知消息（emoji 风格）"""
 	lines = [
-		f'[CHECK-IN] {detail["name"]}',
-		'  ━━━━━━━━━━━━━━━━━━━━',
-		'  签到前',
-		f'     余额: ${detail["before_quota"]:.2f}  |  累计消耗: ${detail["before_used"]:.2f}',
-		'  签到后',
-		f'     余额: ${detail["after_quota"]:.2f}  |  累计消耗: ${detail["after_used"]:.2f}',
+		f'👤 账户: {detail["name"]}',
+		f'💳 签到前: ${detail["before_quota"]:.2f}  |  累计消耗: ${detail["before_used"]:.2f}',
+		f'💳 签到后: ${detail["after_quota"]:.2f}  |  累计消耗: ${detail["after_used"]:.2f}',
 	]
 
 	has_reward = detail['check_in_reward'] != 0
 	has_usage = detail['usage_increase'] != 0
 
 	if has_reward or has_usage:
-		lines.append('  ━━━━━━━━━━━━━━━━━━━━')
-
 		if not has_reward and has_usage:
-			lines.append('  今日已签到（期间有使用）')
+			lines.append('✅ 今日已签到（期间有使用）')
 
 		if has_reward:
-			lines.append(f'  签到获得: +${detail["check_in_reward"]:.2f}')
+			lines.append(f'🎉 签到获得: +${detail["check_in_reward"]:.2f}')
 
 		if has_usage:
-			lines.append(f'  期间消耗: ${detail["usage_increase"]:.2f}')
+			lines.append(f'📉 期间消耗: ${detail["usage_increase"]:.2f}')
 
 		if detail['balance_change'] != 0:
 			change_symbol = '+' if detail['balance_change'] > 0 else ''
-			lines.append(f'  余额变化: {change_symbol}${detail["balance_change"]:.2f}')
+			lines.append(f'📈 余额变化: {change_symbol}${detail["balance_change"]:.2f}')
 	else:
-		lines.extend(['  ━━━━━━━━━━━━━━━━━━━━', '  今日已签到，无变化'])
+		lines.append('✅ 今日已签到，无变化')
 
 	return '\n'.join(lines)
 
@@ -498,9 +493,9 @@ async def main():
 
 	accounts = load_accounts_config()
 	if not accounts:
-		error_msg = '[FAILED] Unable to load account configuration, program exits'
+		error_msg = '❌ 无法加载账号配置，程序退出'
 		print(error_msg)
-		notify.push_message('AnyRouter Check-in Alert', error_msg, msg_type='text')
+		notify.push_message('🎁 Anyrouter 签到通知', error_msg, msg_type='text')
 		sys.exit(1)
 
 	print(f'[INFO] Found {len(accounts)} account configurations')
@@ -562,7 +557,7 @@ async def main():
 
 			if should_notify_this_account:
 				account_name = account.get_display_name(i)
-				status = '[SUCCESS]' if success else '[FAIL]'
+				status = '✅' if success else '❌'
 				account_result = f'{status} {account_name}'
 				if user_info_after and user_info_after.get('success'):
 					account_result += f'\n{user_info_after["display"]}'
@@ -574,7 +569,7 @@ async def main():
 			account_name = account.get_display_name(i)
 			print(f'[FAILED] {account_name} processing exception: {e}')
 			need_notify = True
-			notification_content.append(f'[FAIL] {account_name} exception: {str(e)[:50]}...')
+			notification_content.append(f'❌ {account_name} 异常: {str(e)[:50]}...')
 
 	current_balance_hash = generate_balance_hash(current_balances) if current_balances else None
 	if current_balance_hash:
@@ -604,19 +599,19 @@ async def main():
 
 	if need_notify and notification_content:
 		summary = [
-			'[STATS] Check-in result statistics:',
-			f'[SUCCESS] Success: {success_count}/{total_count}',
-			f'[FAIL] Failed: {total_count - success_count}/{total_count}',
+			'📊 签到结果统计:',
+			f'✅ 成功: {success_count}/{total_count}',
+			f'❌ 失败: {total_count - success_count}/{total_count}',
 		]
 
 		if success_count == total_count:
-			summary.append('[SUCCESS] All accounts check-in successful!')
+			summary.append('🎉 全部账号签到成功!')
 		elif success_count > 0:
-			summary.append('[WARN] Some accounts check-in successful')
+			summary.append('⚠️ 部分账号签到成功')
 		else:
-			summary.append('[ERROR] All accounts check-in failed')
+			summary.append('🚨 全部账号签到失败')
 
-		time_info = f'[TIME] Execution time: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}'
+		time_info = f'⏱️ 登录时间: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}'
 
 		notify_content = '\n\n'.join([time_info, '\n'.join(notification_content), '\n'.join(summary)])
 		screenshot_paths = take_pending_screenshots() if is_debug_enabled() else []
@@ -632,7 +627,7 @@ async def main():
 			notify_content += f'\n\n{screenshot_hint}'
 
 		print(notify_content)
-		notify.push_message('AnyRouter Check-in Alert', notify_content, msg_type='text')
+		notify.push_message('🎁 Anyrouter 签到通知', notify_content, msg_type='text')
 		print('[NOTIFY] Notification sent due to failures or balance changes')
 	else:
 		print('[INFO] All accounts successful and no balance changes detected, notification skipped')
